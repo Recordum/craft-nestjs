@@ -1,7 +1,9 @@
 # DI 
 
+## Scanner
+- ModuleRef를 순회하며 의존성 주입을 한다.
+
 ## Injector
-- 파일을 순회하면서 provider를 등록한다
 - Injection이 필요한 의존관계에 instance를 주입한다
 
 
