@@ -39,6 +39,4 @@ export class Container {
   }
 }
 
-export function Injectable(): ClassDecorator {
-  return (target: any) => {};
-}
+

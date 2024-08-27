@@ -1,4 +1,5 @@
-import { Container, Injectable } from './container';
+import { Container } from './container';
+import { Injectable } from './decorators';
 
 /**
  * HasMap 을 사용하여 DI Container 를 생성하고 관리한다.
@@ -44,8 +45,6 @@ describe('Container', () => {
     container.set('Test2Class', Test2Class);
     container.set('TestClass', TestClass);
     container.set(token, DependencyClass);
-
-    console.log(container);
 
     // then
     const instance = container.get(token);
