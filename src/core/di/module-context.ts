@@ -1,4 +1,4 @@
-import { Constructor, Container } from '../di';
+import { Constructor, Container } from '.';
 
 export class ModuleContext {
   private name: string;
