@@ -3,6 +3,7 @@ import { ModuleContext } from './module-context';
 
 export class ModuleRef {
   private rootModule: ModuleContext;
+  private refModulesName: string[] = [];
 
   constructor(rootModuleCls: Constructor<any>) {
     this.rootModule = new ModuleContext(rootModuleCls);
@@ -13,10 +14,10 @@ export class ModuleRef {
   }
 
   initialize() {
-    this.insert(this.rootModule);
+    this.insert(this.rootModule, []);
   }
 
-  private insert(module: ModuleContext) {
+  private insert(module: ModuleContext, path: string[]) {
     const importedModules =
       Reflect.getMetadata('imports', module.getModuleCls()) || [];
 
@@ -24,6 +25,17 @@ export class ModuleRef {
       Reflect.getMetadata('providers', module.getModuleCls()) || [];
     module.setProviders(providers);
 
+    //TODO 비효율 줄이기
+    const circularModuleName = importedModules
+      .map((module: Constructor<any>) => module.name)
+      .find((name: string) => path.includes(name));
+    if (circularModuleName) {
+      throw new Error(
+        `Circular dependency detected: ${module.getName()} '->' ${circularModuleName}`
+      );
+    }
+
+    const newPath = [...path, module.getName()];
     const childModules: ModuleContext[] = importedModules.map(
       (module: Constructor<any>) => new ModuleContext(module)
     );
@@ -31,7 +43,7 @@ export class ModuleRef {
     if (childModules?.length > 0) {
       module.setChildren(childModules);
       childModules.forEach((childModule) => {
-        this.insert(childModule);
+        this.insert(childModule, newPath);
       });
     }
   }

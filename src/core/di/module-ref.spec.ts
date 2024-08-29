@@ -3,7 +3,7 @@ import { ModuleContext } from './module-context';
 import { ModuleRef } from './module-ref';
 
 describe('ModuleRef', () => {
-  it('initialize : param 으로 넘긴 module을 root로 하여 트리형태로 모듈 의존성을 등록한다', () => {
+  it('initialize : param 으로 넘긴 module을 root로 하여 모듈 의존성을 등록한다', () => {
     // given
     const moduleRef = new ModuleRef(RootModule);
 
@@ -76,6 +76,64 @@ describe('ModuleRef', () => {
     const childProviders1 = childModule1!.getProviders();
     expect(childProviders1.length).toBe(1);
     expect(childProviders1[0]).toBe(ChildProvider1);
+  });
+
+  it('initialize : 모듈이 순환 참조하면 error를 발생시킨다 ', () => {
+    @Module({
+      imports: [],
+    })
+    class ChildModule {}
+    @Module({
+      imports: [ChildModule],
+    })
+    class ParentModule {}
+    @Module({
+      imports: [ParentModule],
+    })
+    class GrandParentModule {}
+
+    @Module({
+      imports: [GrandParentModule],
+    })
+    class CircularRootModule {}
+
+    Reflect.defineMetadata('imports', [GrandParentModule], ChildModule);
+
+    // given
+    const moduleRef = new ModuleRef(CircularRootModule);
+
+    // when-then
+    expect(() => moduleRef.initialize()).toThrowError(
+      'Circular dependency detected'
+    );
+  });
+
+  it('initialize : 단방향 의존을 한다면 여러 모듈이 하나의 모듈을 의존 할 수 있다. ', () => {
+    @Module({
+      imports: [],
+    })
+    class AcyclicModule {}
+
+    @Module({
+      imports: [AcyclicModule],
+    })
+    class AcyclicTestModule1 {}
+
+    @Module({
+      imports: [AcyclicModule],
+    })
+    class AcyclicTestModule2 {}
+
+    @Module({
+      imports: [AcyclicTestModule1, AcyclicTestModule2],
+    })
+    class AcyclicRootModule {}
+
+    // given
+    const moduleRef = new ModuleRef(AcyclicRootModule);
+
+    // when-then
+    expect(() => moduleRef.initialize()).not.toThrowError();
   });
 });
 
