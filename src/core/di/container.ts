@@ -1,3 +1,4 @@
+import { ArrayEntry } from './../../../node_modules/type-fest/source/entry.d';
 import 'reflect-metadata';
 
 export type Constructor<T> = new (...args: any[]) => T;
@@ -8,6 +9,11 @@ export class Container {
 
   setProvider<T>(token: Token, value: Constructor<T>): void {
     this.providers.set(token, value);
+  }
+
+  getProviders(): Constructor<any>[] {
+    const keys = Array.from(this.providers.keys());
+    return keys?.map((key) => this.getProvider(key));
   }
 
   getProvider<T>(token: Token): Constructor<T> {
@@ -34,5 +40,3 @@ export class Container {
     return instance;
   }
 }
-
-

@@ -16,7 +16,25 @@ export class ModuleContext {
     this.children = children;
   }
 
-  getChildren() {
+  setProviders(providers: Constructor<any>[]) {
+    providers.forEach((provider) => {
+      this.container.setProvider(provider.name, provider);
+    });
+  }
+
+  getChildren() : ModuleContext[] {
     return this.children;
+  }
+
+  getName() : string {
+    return this.name;
+  }
+
+  getModuleCls() : Constructor<any> {
+    return this.moduleCls;
+  }
+
+  getProviders(): Constructor<any>[] {
+    return this.container.getProviders();
   }
 }
