@@ -10,9 +10,9 @@ describe('Container', () => {
     const container = new Container();
     const token = 'TOKEN';
     // when
-    container.set(token, TestClass);
+    container.setProvider(token, TestClass);
     // then
-    expect(container.get<TestClass>(token)).toEqual(new TestClass());
+    expect(container.getProvider<TestClass>(token)).toEqual(TestClass);
   });
 
   it('같은 token 으로 여러번 set 할 경우 마지막에 set 한 class type의 instance 을 반환한다.', () => {
@@ -20,11 +20,11 @@ describe('Container', () => {
     const container = new Container();
     const token = 'TOKEN';
     // when
-    container.set(token, TestClass);
-    container.set(token, Test2Class);
+    container.setProvider(token, TestClass);
+    container.setProvider(token, Test2Class);
 
     // then
-    expect(container.get(token)).toEqual(new Test2Class());
+    expect(container.getProvider(token)).toEqual(Test2Class);
   });
 
   it('token 이 없을 경우 에러를 반환한다.', () => {
@@ -33,28 +33,7 @@ describe('Container', () => {
     const token = 'TOKEN';
     // when
     // then
-    expect(() => container.get(token)).toThrowError();
-  });
-
-  it('provider가 의존하는 class type이 class name을 token 하여 등록되어 있다면 의존성을 해결하고 instance를 반환한다', () => {
-    // given
-    const container = new Container();
-    const token = 'RESOLVE_DEPENDENCY';
-    // when
-    container.set('DependencyClass2', DependencyClass2);
-    container.set('Test2Class', Test2Class);
-    container.set('TestClass', TestClass);
-    container.set(token, DependencyClass);
-
-    // then
-    const instance = container.get(token);
-    expect(instance).toBeInstanceOf(DependencyClass);
-    expect(instance).toEqual(
-      new DependencyClass(
-        new TestClass(),
-        new DependencyClass2(new Test2Class())
-      )
-    );
+    expect(() => container.getProvider(token)).toThrowError();
   });
 });
 @Injectable()

@@ -6,35 +6,31 @@ export class Container {
   private providers = new Map<Token, Constructor<any>>();
   private instances = new Map<Token, any>();
 
-  set<T>(token: Token, value: Constructor<T>): void {
+  setProvider<T>(token: Token, value: Constructor<T>): void {
     this.providers.set(token, value);
   }
 
-  get<T>(token: Token): T {
-    const existingInstance = this.instances.get(token);
-    if (existingInstance) {
-      return existingInstance;
-    }
-
+  getProvider<T>(token: Token): Constructor<T> {
     const provider = this.providers.get(token);
     if (!provider) {
       throw new Error(`No provider for ${token}`);
     }
+    return provider;
 
-    const dependencies =
-      Reflect.getMetadata('design:paramtypes', provider) || [];
+    // const dependencies =
+    //   Reflect.getMetadata('design:paramtypes', provider) || [];
 
-    const args = dependencies.map((dependency: any) =>
-      this.resolveDependencies(dependency)
-    );
+    // const args = dependencies.map((dependency: any) =>
+    //   this.resolveDependencies(dependency)
+    // );
 
-    const instance = new provider(...args) as T;
-    return instance;
+    // const instance = new provider(...args) as T;
+    // return instance;
   }
 
   private resolveDependencies<T>(dependency: Constructor<any>): T {
     const token = dependency.name;
-    const instance = this.get(token) as T;
+    const instance = this.getProvider(token) as T;
     return instance;
   }
 }
