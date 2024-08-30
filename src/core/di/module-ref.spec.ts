@@ -135,6 +135,21 @@ describe('ModuleRef', () => {
     // when-then
     expect(() => moduleRef.initialize()).not.toThrowError();
   });
+
+  it('traverse : 모듈을 순회하며 callback 함수를 실행한다', () => {
+    // given
+    const moduleRef = new ModuleRef(RootModule);
+    moduleRef.initialize();
+    // when
+    const callback = jest.fn((moduleContext: ModuleContext) => {
+      const name = moduleContext.getName();
+    });
+
+    moduleRef.traverse(callback);
+
+    //then
+    expect(callback).toHaveBeenCalledTimes(5);
+  });
 });
 
 @Injectable()

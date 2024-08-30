@@ -22,15 +22,15 @@ export class ModuleContext {
     });
   }
 
-  getChildren() : ModuleContext[] {
+  getChildren(): ModuleContext[] {
     return this.children;
   }
 
-  getName() : string {
+  getName(): string {
     return this.name;
   }
 
-  getModuleCls() : Constructor<any> {
+  getModuleCls(): Constructor<any> {
     return this.moduleCls;
   }
 

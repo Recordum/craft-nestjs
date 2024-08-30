@@ -1,5 +1,6 @@
 import { Constructor } from './container';
 import { ModuleContext } from './module-context';
+import { ChildProvider1 } from './module-ref.spec';
 
 export class ModuleRef {
   private rootModule: ModuleContext;
@@ -7,6 +8,10 @@ export class ModuleRef {
 
   constructor(rootModuleCls: Constructor<any>) {
     this.rootModule = new ModuleContext(rootModuleCls);
+  }
+
+  traverse(callback: (moduleContext: ModuleContext) => void) {
+    this.visit(this.rootModule, callback);
   }
 
   getRootModule() {
@@ -45,6 +50,20 @@ export class ModuleRef {
       childModules.forEach((childModule) => {
         this.insert(childModule, newPath);
       });
+    }
+  }
+
+  private visit(
+    child: ModuleContext,
+    callback: (moduleContext: ModuleContext) => void
+  ) {
+    if (!child) {
+      throw new Error('not exist node');
+    }
+    callback(child);
+    const children = child.getChildren();
+    if (children?.length > 0) {
+      children.forEach((child) => this.visit(child, callback));
     }
   }
 }
