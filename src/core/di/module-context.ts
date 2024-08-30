@@ -37,4 +37,8 @@ export class ModuleContext {
   getProviders(): Constructor<any>[] {
     return this.container.getProviders();
   }
+
+  getInstance<T>(token: string): T | null {
+    return this.container.getInstance(token);
+  }
 }

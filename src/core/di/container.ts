@@ -34,6 +34,15 @@ export class Container {
     // return instance;
   }
 
+  setInstance<T>(token: Token, value: T): void {
+    this.instances.set(token, value);
+  }
+
+  getInstance<T>(token: Token): T | null {
+    const instance = this.instances.get(token);
+    return instance;
+  }
+
   private resolveDependencies<T>(dependency: Constructor<any>): T {
     const token = dependency.name;
     const instance = this.getProvider(token) as T;
